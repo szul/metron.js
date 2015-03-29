@@ -511,6 +511,14 @@ String.prototype.normalize = function() {
 	return this.replace(/^\s*|\s(?=\s)|\s*$/g, "");
 };
 
+String.prototype.startsWith = function (part) {
+    return this.slice(0, part.length) == part;
+};
+
+String.prototype.endsWith = function (part) {
+    return this.slice(-part.length) == part;
+};
+
 String.prototype.capFirst = function() {
   if(this.length == 1) {
     return this.toUpperCase();
@@ -615,6 +623,24 @@ Array.prototype.remove = function(item) {
 		this.splice(index, 1);
 	}
 };
+
+Array.prototype.toObjectArray = function(objName) {
+	if (objName == null) {
+		throw 'Property name must be provided for conversion.';
+	}
+	var items = this; 
+	if(typeof(items[0]) == 'string' || typeof(items[0]) == 'number' || typeof(items[0]) == 'boolean') {  
+	    for(var i = 0; i < items.length; i++) { 
+		    var val = items[i]; 
+			items[i] = { }; 
+			items[i][objName] = val; 
+		} 
+		return items; 
+	} 
+	else { 
+	  return this; 
+	} 
+};  
 
 /* Works in Webkit. Fails in Android. */
 Object.prototype.ensureArray = function() {
