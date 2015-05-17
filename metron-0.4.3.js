@@ -594,6 +594,14 @@ String.prototype.stripHtml = function() {
 	return content;
 };
 
+String.prototype.escapeHtml = function() {
+	var content = this.replace(/"/g, '&quot;');
+	content.replace(/&(?!\w+;)/g, '&amp;');
+	content.replace(/>/g, '&gt;');
+	content.replace(/</g, '&lt;');
+	return content;
+};
+
 //formatPhoneNumber needs to be a part of some validation mechanism
 String.prototype.formatPhoneNumber = function() {
 	try {
@@ -602,6 +610,10 @@ String.prototype.formatPhoneNumber = function() {
 	catch(e) {
 		return this;
 	}
+};
+
+Array.prototype.empty = function() {
+	return this.splice(0, this.length);
 };
 
 Array.prototype.isEmpty = function() {
