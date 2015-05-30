@@ -191,6 +191,21 @@ Metron.AJAX = (function() {
 	};
 })();
 
+/* Metron Web namespace and methods */
+Metron.Web = {
+	querystring: {
+		get: function (key) {
+			var result = [];
+			var match;
+			var re = new RegExp('(?:\\?|&)' + key + '=(.*?)(?=&|$)', 'gi');
+			while ((match = re.exec(document.location.search)) != null) {
+				result.push(match[1]);
+			}
+			return result;
+		}
+	}
+};
+
 /* Metron XML namespace and methods */
 
 Metron.XML = {
