@@ -462,23 +462,24 @@ Metron.Template.Cache = (function() {
 
 /* Metron convenience methods */
 
-var $m = {
-    select: function (val, is_tag_name) {
-        return Metron.Element.select(val, is_tag_name);
-    },
-    ajax: function (url, options) {
-        Metron.AJAX.createHTTPClient(url, options);
-    },
-    xml: function (xmlString) {
-        return Metron.XML.load(xmlString);
-    },
-    json: function (val) {
-        return Metron.JSON.parse(val);
-    },
-    load: function (file, values) {
-        return Metron.Template.load(file, values);
-    }
-};
+if(typeof($m) === 'undefined') {
+	var $m = Metron;
+	$m.select: function (val, is_tag_name) {
+		return Metron.Element.select(val, is_tag_name);
+	};
+	$m.ajaxClient: function (url, options) {
+		Metron.AJAX.createHTTPClient(url, options);
+	};
+	$m.loadXml: function (xmlString) {
+		return Metron.XML.load(xmlString);
+	};
+	$m.parseJson: function (val) {
+		return Metron.JSON.parse(val);
+	};
+	$m.loadTemplate: function (file, values) {
+		return Metron.Template.load(file, values);
+	};
+}
 
 /* require() function for CommonJS protocol */
 if(typeof(require) === 'undefined') {
