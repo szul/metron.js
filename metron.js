@@ -464,19 +464,19 @@ Metron.Template.Cache = (function() {
 
 if(typeof($m) === 'undefined') {
 	var $m = Metron;
-	$m.select: function (val, is_tag_name) {
+	$m.select = function (val, is_tag_name) {
 		return Metron.Element.select(val, is_tag_name);
 	};
-	$m.ajaxClient: function (url, options) {
+	$m.ajaxClient = function (url, options) {
 		Metron.AJAX.createHTTPClient(url, options);
 	};
-	$m.loadXml: function (xmlString) {
+	$m.loadXml = function (xmlString) {
 		return Metron.XML.load(xmlString);
 	};
-	$m.parseJson: function (val) {
+	$m.parseJson = function (val) {
 		return Metron.JSON.parse(val);
 	};
-	$m.loadTemplate: function (file, values) {
+	$m.loadTemplate = function (file, values) {
 		return Metron.Template.load(file, values);
 	};
 }
