@@ -463,7 +463,7 @@ Metron.Template.Cache = (function() {
 /* Metron convenience methods */
 
 if(typeof($m) === 'undefined') {
-	var $m = Metron;
+	$m = Metron;
 	$m.select = function (val, is_tag_name) {
 		return Metron.Element.select(val, is_tag_name);
 	};
