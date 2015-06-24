@@ -669,13 +669,3 @@ Array.prototype.toObjectArray = function(objName) {
 	  return this; 
 	} 
 };  
-
-/* Works in Webkit. Fails in Android. */
-Object.prototype.ensureArray = function() {
-	if(this.length == null) {
-		var arr = [];
-		arr.push(this);
-		return arr;
-	}
-	return this;
-};
