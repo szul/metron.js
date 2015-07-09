@@ -17,11 +17,12 @@ Metron.Class = {
 	@param: superClass = The object from which the subclass inherits.
 	*/
 	extend : function(subClass, superClass) {
-		var holder = function() { };
-		holder.prototype = superClass.prototype;
-		subClass.prototype = new holder();
+		var placeholder = function() { };
+		placeholder.prototype = superClass.prototype;
+		subClass.prototype = new placeholder();
 		subClass.prototype.constructor = subClass;
 		subClass.superclass = superClass.prototype;
+		//Should this be === ?
 		if(superClass.prototype.constructor == Object.prototype.constructor) {
 			superClass.prototype.constructor = superClass;
 		}
@@ -32,10 +33,10 @@ Metron.Class = {
 	@param: superClass = The object to be cloned.
 	@return: object
 	*/
-	clone : function(object) {
-		function holder() { }
-		holder.prototype = object;
-		return new holder();
+	clone : function(obj) {
+		function placeholder() { }
+		placeholder.prototype = obj;
+		return new placeholder();
 	},
 	/*
 	@method: mixin(object receivingObject, object mixinObject)
@@ -44,29 +45,21 @@ Metron.Class = {
 	@param: mixinObject = The object containing the methods and properties to be mixed in.
 	*/
 	mixin : function(receivingObject, mixinObject) {
+		//Does this need hasOwnObject() ?
 		for(var method in mixinObject.prototype) {
-			if(mixinObject.prototype[method] !== null) {
-				if(receivingObject.prototype[method] === undefined) {
-					receivingObject.prototype[method] = mixinObject.prototype[method];
-				}
+			if(mixinObject.prototype[method] !== null && typeof(receivingObject.prototype[method]) === 'undefined') {
+				receivingObject.prototype[method] = mixinObject.prototype[method];
 			}
 		}
 	}
 };
 
-/* Metron Element namespace and methods */
-Metron.Element = {
-	select : function(val, is_tag_name) {
-		if (is_tag_name === undefined || is_tag_name === false) {
-			return document.getElementById(val);
-		}
-		else {
-			return document.getElementsByTagName(val);
-		}
-	}
-};
-
-/* Metron AJAX namespace and methods */
+/*
+ * Metron AJAX namespace and methods
+ * It is better to use jQuery or some other library.
+ * These AJAX methods are used internally by the template engine and probably
+ * need to be private functions.
+ */
 
 Metron.AJAX = (function() {
 	function buildXMLHttpRequest() {
@@ -90,13 +83,13 @@ Metron.AJAX = (function() {
 	return {
 		createHTTPClient: function (url, options) {
 			options = options || { };
-			if (options.method !== undefined) {
+			if (typeof(options.method) !== 'undefined') {
 				options.method = options.method.toUpperCase();
 			}
 			if (options.data && typeof (options.data) == 'object') {
 				var pairs = [];
 				for (var i in options.data) {
-					if (options.data[i] !== undefined) {
+					if (typeof(options.data[i]) !== 'undefined') {
 						pairs.push(i + '=' + encodeURI(options.data[i]));
 					}
 				}
@@ -108,7 +101,7 @@ Metron.AJAX = (function() {
 			}
 			if (document && dataType === 'jsonp') {
 				var responseData;
-				if (options.onsuccess !== undefined) {
+				if (typeof(options.onsuccess) !== 'undefined') {
 					var callback = 'jsonp' + Metron.GUID.newGuid().replace(/-/g, '_');
 					var head = document.getElementsByTagName('head');
 					window[callback] = function (data) {
@@ -123,8 +116,8 @@ Metron.AJAX = (function() {
 							var transport = {
 								"readyState": 4
 							};
-							var stringified = Metron.JSON.stringify(responseData);
-							if (stringified === undefined || stringified === null || stringified.trim() === '') {
+							var stringified = JSON.stringify(responseData);
+							if (typeof(stringified) === 'undefined' || stringified === null || stringified.trim() === '') {
 								transport.status = 500;
 							}
 							else {
@@ -154,11 +147,11 @@ Metron.AJAX = (function() {
 			else {
 				var request = buildXMLHttpRequest();
 				if (request) {
-					request.open((options.method !== undefined) ? options.method : 'GET', url, (options.async !== undefined) ? options.async : true);
+					request.open((typeof(options.method) !== 'undefined') ? options.method : 'GET', url, (typeof(options.async) !== 'undefined') ? options.async : true);
 					request.onreadystatechange = function () {
 						if (request.readyState === 4) {
 							if (request.status === 200) {
-								if (options.onsuccess !== undefined) {
+								if (typeof(options.onsuccess) !== 'undefined') {
 									if (dataType === 'json') {
 										try {
 											request.responseJSON = Metron.JSON.parse(request.responseText);
@@ -175,13 +168,13 @@ Metron.AJAX = (function() {
 								}
 							}
 							if (request.status === 404 || request.status === 500) {
-								if (options.onfailure !== undefined) {
+								if (typeof(options.onfailure) !== 'undefined') {
 									options.onfailure(request);
 								}
 							}
 						}
 					};
-					if (options.method !== undefined && options.method == 'POST') {
+					if (typeof(options.method) !== 'undefined' && options.method == 'POST') {
 						request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 					}
 					request.send(options.data);
@@ -192,6 +185,7 @@ Metron.AJAX = (function() {
 })();
 
 /* Metron Web namespace and methods */
+
 Metron.Web = {
 	querystring: {
 		get: function (key) {
@@ -205,96 +199,6 @@ Metron.Web = {
 		}
 	}
 };
-
-/* Metron XML namespace and methods */
-
-Metron.XML = {
-	load: function(xmlString) {
-		var xmlDoc;
-		if (window.ActiveXObject) {
-			xmlDoc = new ActiveXObject('Microsoft.XMLDOM');
-			xmlDoc.async = 'false';
-			xmlDoc.loadXML(xmlString);
-			return xmlDoc;
-		}
-		else if (document.implementation && document.implementation.createDocument) {
-			var parser = new DOMParser();
-			xmlDoc = parser.parseFromString(xmlString,'text/xml');
-			return xmlDoc;
-	      }
-	      else {
-		return null;
-	      }
-	}
-};
-
-/* Metron JSON namespace and methods */
-
-Metron.JSON = (function() {
-	var cx = new RegExp('/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g');
-	var escapable = new RegExp('/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g');
-	var meta = { '\b': '\\b', '\t': '\\t', '\n': '\\n', '\f': '\\f', '\r': '\\r', '"': '\\"', '\\': '\\\\' };
-	function isJSON(val) {
-		if (val === undefined || val.trim() === '') {
-			return false;
-		}
-		val = val.replace(/\\./g, '@').replace(/"[^"\\\n\r]*"/g, '');
-		return (/^[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]*$/).test(val);
-	}
-	function quote(string) {
-	    escapable.lastIndex = 0;
-	    return escapable.test(string) ? '"' + string.replace(escapable, function (a) {
-	        var c = meta[a];
-	        return typeof c === 'string' ? c : '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
-	    }) + '"' : '"' + string + '"';
-	}
-	function stringMaker(key, holder) {
-		var value = holder[key];
-		var val;
-		switch (typeof value) {
-			case 'string':
-				return quote(value);
-			case 'number':
-				return isFinite(value) ? String(value) : 'null';
-			case 'boolean':
-			case 'null':
-				return String(value);
-			case 'object':
-				if (!value) {
-					return 'null';
-				}
-			var partial = [];
-			if (Object.prototype.toString.apply(value) === '[object Array]') {
-				var length = value.length;
-				for (var i = 0; i < length; i += 1) {
-					partial[i] = stringMaker(i, value) || 'null';
-				}
-				val = (partial.length === 0) ? '[]' : '[' + partial.join(',') + ']';
-				return val;
-			}
-			for (var j in value) {
-				if (Object.hasOwnProperty.call(value, j)) {
-					val = stringMaker(j, value);
-					if (val) {
-						partial.push(quote(j) + (':') + val);
-					}
-				}
-			}
-			val = (partial.length === 0) ? '{}' : '{' + partial.join(',') + '}';
-			return val;
-		}
-	}
-	return {
-		parse: function (val) {
-			if (isJSON(val)) {
-				return eval('(' + val + ')');
-			}
-		},
-		stringify: function (value) {
-			return stringMaker('', { '': value });
-		}
-	};
-})();
 
 /* Metron Observer namespace and methods */
 
@@ -349,6 +253,10 @@ Metron.GUID = (function() {
     	    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
     	}
 	return {
+		/*
+		 * Note that JavaScript doesn't actually have GUID or UUID functionality.
+		 * This is as best as it gets.
+		 */
 		newGuid: function () {
 			return (generateGUIDPart() + generateGUIDPart() + "-" + generateGUIDPart() + "-" + generateGUIDPart() + "-" + generateGUIDPart() + "-" + generateGUIDPart() + generateGUIDPart() + generateGUIDPart());
 		}
@@ -389,7 +297,7 @@ Metron.IO.File = {
 Metron.Template = {
 	load: function(file, values, caching) {
 		var template;
-		if(caching === undefined) {
+		if(typeof(caching) === 'undefined') {
 			caching = true;
 		}
 		if(caching) {
@@ -397,7 +305,7 @@ Metron.Template = {
 				template = Metron.Template.Cache.find(file);
 			}
 		}
-		if(template === undefined) {
+		if(typeof(template) === 'undefined') {
 			try {
 				Metron.AJAX.createHTTPClient(file,
 				{
@@ -419,7 +327,7 @@ Metron.Template = {
 			Metron.Template.Cache.insert(file, template);
 		}
 		for (var i in values) {
-		    if (values[i] !== undefined) {
+		    if (typeof(values[i]) !== 'undefined') {
 				var placeholder = '{{' + i + '}}';
 				template = template.replace(placeholder, values[i]);
 			}
@@ -464,21 +372,12 @@ Metron.Template.Cache = (function() {
 
 if(typeof($m) === 'undefined') {
 	$m = Metron;
-	$m.select = function (val, is_tag_name) {
-		return Metron.Element.select(val, is_tag_name);
-	};
-	$m.ajaxClient = function (url, options) {
-		Metron.AJAX.createHTTPClient(url, options);
-	};
-	$m.loadXml = function (xmlString) {
-		return Metron.XML.load(xmlString);
-	};
-	$m.parseJson = function (val) {
-		return Metron.JSON.parse(val);
-	};
 	$m.loadTemplate = function (file, values) {
 		return Metron.Template.load(file, values);
 	};
+	$m.querystring = function(key) {
+		return Metron.Web.querystring.get(key);
+	}
 }
 
 /* require() function for CommonJS protocol */
@@ -548,7 +447,7 @@ String.prototype.capFirst = function() {
       return this.substring(0,1).toUpperCase() + this.substring(1);
     }
   }
-  return undefined;
+  return null;
 };
 
 String.prototype.capWords = function() {
@@ -560,14 +459,14 @@ String.prototype.capWords = function() {
   else if(words.length > 1) {
     var result = '';
     for(var i = 0; i < words.length; i++) {
-      if(words[i].capFirst() !== undefined) {
+      if(words[i].capFirst() != null) {
         result += words[i].capFirst() + ' ';
       }
     }
     result.trim();
     return result;
   }
-  return undefined;
+  return null;
 };
 
 String.prototype.truncateWords = function(number) {
@@ -618,8 +517,8 @@ String.prototype.escapeHtml = function() {
 	return content;
 };
 
-//formatPhoneNumber needs to be a part of some validation mechanism
-String.prototype.formatPhoneNumber = function() {
+//toPhoneNumber() needs to be a part of some validation mechanism
+String.prototype.toPhoneNumber = function() {
 	try {
 		return this.substring(0,3) + '-' + this.substring(3,6) + '-' + this.substring(6);
 	}
@@ -652,20 +551,27 @@ Array.prototype.remove = function(item) {
 	}
 };
 
+/*
+ * There are frameworks that auto-generate JSON based on data schemas, but sometimes they
+ * return data in inconsistent ways. For example, an array of strings might be returned
+ * instead of an array of objects containing strings, etc. because the underlying data at the time
+ * only cotains the string value, but when other data is present (in the database, etc.),
+ * it will return the object array. Certain convience methods are necessary to force proper formatting.
+ */
 Array.prototype.toObjectArray = function(objName) {
 	if (objName == null) {
 		throw 'Property name must be provided for conversion.';
 	}
-	var items = this; 
-	if(typeof(items[0]) == 'string' || typeof(items[0]) == 'number' || typeof(items[0]) == 'boolean') {  
-	    for(var i = 0; i < items.length; i++) { 
-		    var val = items[i]; 
-			items[i] = { }; 
-			items[i][objName] = val; 
-		} 
-		return items; 
-	} 
-	else { 
-	  return this; 
-	} 
-};  
+	var items = this;
+	if(typeof(items[0]) == 'string' || typeof(items[0]) == 'number' || typeof(items[0]) == 'boolean') {
+	    for(var i = 0; i < items.length; i++) {
+		    var val = items[i];
+			items[i] = { };
+			items[i][objName] = val;
+		}
+		return items;
+	}
+	else {
+	  return this;
+	}
+};
