@@ -380,13 +380,6 @@ if(typeof($m) === 'undefined') {
 	}
 }
 
-/* require() function for CommonJS protocol */
-if(typeof(require) === 'undefined') {
-	require = function() {
-		//Add 'require' code here.
-	};
-}
-
 /* If global functions for extends(), clone() and mixin() do not already exist, then it's OK to make the Metron ones global */
 if(typeof(extend) === 'undefined') {
 	extend = Metron.Class.extend;
