@@ -155,8 +155,13 @@ if(typeof(clone) === 'undefined') {
 	clone = metron.class.clone;
 }
 
-if(typeof(mixin) == 'undefined') {
+if(typeof(mixin) === 'undefined') {
 	mixin = metron.class.mixin;
+}
+
+/* If a global object for Guid does not already exist, create one */
+if(typeof(Guid) === 'undefined') {
+	Guid = metron.guid;
 }
 
 /* String object extensions */
