@@ -7,5 +7,5 @@ It was originally used in Windows XP and Windows 7 gadgets, and was later used i
 
 CDN:
 
-    http://cdn.overmortal.com/metron/metron-0.5.js
-    http://cdn.overmortal.com/metron/metron-0.5.min.js
+    http://cdn.overmortal.com/metron/metron-0.5.1.js
+    http://cdn.overmortal.com/metron/metron-0.5.1.min.js
