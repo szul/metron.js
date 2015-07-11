@@ -3,13 +3,18 @@
 @namespace: Metron
 @description: A JavaScript library designed to be lightweight that focuses on native type extensions and common view formatting.
 */
-var Metron = { };
+if(typeof(metron) === 'undefined') {
+	metron = { };
+}
+else {
+	throw 'Error: A library named [metron] already exists in the current namespace.';
+}
 
 /*
 @namespace: Metron.Class
 @description: These methods are used for inheritance and for extending JavaScript class objects. All methods have corresponding global functions of the same name if those global functions do not already exist.
 */
-Metron.Class = {
+metron.class = {
 	/*
 	@method: extend(object subClass, object superClass)
 	@description: If the objects use classical inheritance, this will subclass one object with another.
@@ -54,139 +59,9 @@ Metron.Class = {
 	}
 };
 
-/*
- * Metron AJAX namespace and methods
- * It is better to use jQuery or some other library.
- * These AJAX methods are used internally by the template engine and probably
- * need to be private functions.
- */
-
-Metron.AJAX = (function() {
-	function buildXMLHttpRequest() {
-		var xhr;
-        if (window.XMLHttpRequest) {
-            xhr = new XMLHttpRequest();
-        }
-        else if (window.ActiveXObject) {
-            xhr = new ActiveXObject('Microsoft.XMLHTTP');
-            try {
-                xhr = new ActiveXObject("Msxml2.XMLHTTP");
-            }
-            catch (e) {
-                try {
-                    xhr = new ActiveXObject("Microsoft.XMLHTTP");
-                } catch (ex) { }
-            }
-        }
-        return xhr;
-    }
-	return {
-		createHTTPClient: function (url, options) {
-			options = options || { };
-			if (typeof(options.method) !== 'undefined') {
-				options.method = options.method.toUpperCase();
-			}
-			if (options.data && typeof (options.data) == 'object') {
-				var pairs = [];
-				for (var i in options.data) {
-					if (typeof(options.data[i]) !== 'undefined') {
-						pairs.push(i + '=' + encodeURI(options.data[i]));
-					}
-				}
-				options.data = pairs.join('&');
-			}
-			var dataType;
-			if (options.type && (options.type.trim().toLowerCase() === 'jsonp' || options.type.trim().toLowerCase() === 'json' || options.type.trim().toLowerCase() === 'xml')) {
-				dataType = options.type.trim().toLowerCase();
-			}
-			if (document && dataType === 'jsonp') {
-				var responseData;
-				if (typeof(options.onsuccess) !== 'undefined') {
-					var callback = 'jsonp' + Metron.GUID.newGuid().replace(/-/g, '_');
-					var head = document.getElementsByTagName('head');
-					window[callback] = function (data) {
-						responseData = data;
-					};
-					var script = document.createElement('script');
-					script.setAttribute('type', 'text/javascript');
-					var done = false;
-					script.onload = script.onreadystatechange = function () {
-						if (!done && (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete')) {
-							done = true;
-							var transport = {
-								"readyState": 4
-							};
-							var stringified = JSON.stringify(responseData);
-							if (typeof(stringified) === 'undefined' || stringified === null || stringified.trim() === '') {
-								transport.status = 500;
-							}
-							else {
-								transport.status = 200;
-								transport.responseJSON = responseData;
-								transport.responseText = stringified;
-							}
-							options.onsuccess(transport);
-							try {
-								script.onload = script.onreadystatechange = null;
-								if (head && script.parentNode) {
-									head.removeChild(script);
-								}
-							}
-							catch (e) { }
-						}
-					};
-					script.setAttribute('src', url + '?' + options.data + '&callback=' + callback);
-					if (head.length > 0) {
-						head[0].appendChild(script);
-					}
-				}
-				else {
-					throw "Error: No 'onsuccess' callback specified.";
-				}
-			}
-			else {
-				var request = buildXMLHttpRequest();
-				if (request) {
-					request.open((typeof(options.method) !== 'undefined') ? options.method : 'GET', url, (typeof(options.async) !== 'undefined') ? options.async : true);
-					request.onreadystatechange = function () {
-						if (request.readyState === 4) {
-							if (request.status === 200) {
-								if (typeof(options.onsuccess) !== 'undefined') {
-									if (dataType === 'json') {
-										try {
-											request.responseJSON = Metron.JSON.parse(request.responseText);
-										}
-										catch (e) { }
-									}
-									if (dataType === 'xml') {
-										try {
-											request.responseXML = Metron.XML.load(requeste.responseText);
-										}
-										catch (ex) { }
-									}
-									options.onsuccess(request);
-								}
-							}
-							if (request.status === 404 || request.status === 500) {
-								if (typeof(options.onfailure) !== 'undefined') {
-									options.onfailure(request);
-								}
-							}
-						}
-					};
-					if (typeof(options.method) !== 'undefined' && options.method == 'POST') {
-						request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-					}
-					request.send(options.data);
-				}
-			}
-		}
-	};
-})();
-
 /* Metron Web namespace and methods */
 
-Metron.Web = {
+metron.web = {
 	querystring: {
 		get: function (key) {
 			var result = [];
@@ -202,7 +77,7 @@ Metron.Web = {
 
 /* Metron Observer namespace and methods */
 
-Metron.Observer = (function () {
+metron.observer = (function () {
 	var callback;
 	var frequency;
 	var isExecuting = false;
@@ -220,14 +95,14 @@ Metron.Observer = (function () {
 	}
 	function onTimer(pe) {
 	    if (!isExecuting) {
-			try {
-		    	isExecuting = true;
-		    	execute(pe);
-		    	isExecuting = false;
-			} catch (e) {
-		    	isExecuting = false;
-		    	throw e;
-			}
+				try {
+			    	isExecuting = true;
+			    	execute(pe);
+			    	isExecuting = false;
+				} catch (e) {
+			    	isExecuting = false;
+			    	throw e;
+				}
 	    }
 	}
 	return {
@@ -248,7 +123,7 @@ Metron.Observer = (function () {
 
 /* Metron GUID namespace and methods */
 
-Metron.GUID = (function() {
+metron.guid = (function() {
 	function generateGUIDPart() {
     	    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
     	}
@@ -263,134 +138,25 @@ Metron.GUID = (function() {
 	};
 })();
 
-/* Metron IO namespace and methods */
-
-Metron.IO = { };
-
-/* Metron File namespace and methods */
-
-Metron.IO.File = {
-	//Currently Windows-only
-	read: function(file) {
-		var output;
-		try {
-			var f = new ActiveXObject("Scripting.FileSystemObject");
-			var otf = f.OpenTextFile(Metron.IO.File.formatUnixPath(file), 1);
-			output = otf.ReadAll();
-			otf.close();
-		}
-		catch(e) {
-			throw 'Error: Unable to open file: ' + e;
-		}
-		return output;
-	},
-	formatUnixPath: function(file) {
-		return file.replace(/\\/g,'/');
-	},
-	formatWindowsPath: function(file) {
-		return file.replace(/\//g,'\\');
-	}
-};
-
-/* Metron template namespace and methods */
-
-Metron.Template = {
-	load: function(file, values, caching) {
-		var template;
-		if(typeof(caching) === 'undefined') {
-			caching = true;
-		}
-		if(caching) {
-			if(Metron.Template.Cache.exists(file)) {
-				template = Metron.Template.Cache.find(file);
-			}
-		}
-		if(typeof(template) === 'undefined') {
-			try {
-				Metron.AJAX.createHTTPClient(file,
-				{
-					onsuccess: function(transport) {
-						template = transport.responseText;
-					},
-					onfailure: function() {
-						throw 'Error: Unable to load file: ' + file;
-					},
-					async: false,
-					method: 'GET'
-				});
-			}
-			catch(e) {
-				template = Metron.IO.File.read(file);
-			}
-		}
-		if(caching && !Metron.Template.Cache.exists(file)) {
-			Metron.Template.Cache.insert(file, template);
-		}
-		for (var i in values) {
-		    if (typeof(values[i]) !== 'undefined') {
-				var placeholder = '{{' + i + '}}';
-				template = template.replace(placeholder, values[i]);
-			}
-		}
-		return template;
-	}
-};
-
-/* Metron Template Cache namespace and methods */
-
-Metron.Template.Cache = (function() {
-	var collection = { };
-	return {
-		insert: function(path, contents) {
-			collection[path] = contents;
-		},
-		remove: function(path) {
-			collection[path] = null;
-		},
-		find: function(path) {
-			return collection[path];
-		},
-		exists: function(path) {
-			if(collection[path] !== null) {
-				return true;
-			}
-			else {
-				return false;
-			}
-		},
-		precache: function(files) {
-			for(var i = 0; i < files.length; i++) {
-				if(!Metron.Template.Cache.exists(files[i])) {
-					Metron.Template.load(files[i], null);
-				}
-			}
-		}
-	};
-})();
-
-/* Metron convenience methods */
-
+//Create a [$m] shortcut if one does not exist.
 if(typeof($m) === 'undefined') {
-	$m = Metron;
-	$m.loadTemplate = function (file, values) {
-		return Metron.Template.load(file, values);
-	};
+	$m = metron;
 	$m.querystring = function(key) {
-		return Metron.Web.querystring.get(key);
+		return metron.web.querystring.get(key);
 	}
 }
 
 /* If global functions for extends(), clone() and mixin() do not already exist, then it's OK to make the Metron ones global */
 if(typeof(extend) === 'undefined') {
-	extend = Metron.Class.extend;
+	extend = metron.class.extend;
 }
 
 if(typeof(clone) === 'undefined') {
-	clone = Metron.Class.clone;
+	clone = metron.class.clone;
 }
 
 if(typeof(mixin) == 'undefined') {
-	mixin = Metron.Class.mixin;
+	mixin = metron.class.mixin;
 }
 
 /* String object extensions */
@@ -518,6 +284,13 @@ String.prototype.toPhoneNumber = function() {
 	catch(e) {
 		return this;
 	}
+};
+
+String.isNullOrEmpty = function(val) {
+	if(val == null || val.trim() === '') {
+		return true;
+	}
+	return false;
 };
 
 Array.prototype.empty = function() {
