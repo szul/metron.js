@@ -1,6 +1,6 @@
 /*
 @library: Metron
-@namespace: Metron
+@namespace: metron
 @description: A JavaScript library designed to be lightweight that focuses on native type extensions and common view formatting.
 */
 if(typeof(metron) === 'undefined') {
@@ -11,7 +11,7 @@ else {
 }
 
 /*
-@namespace: Metron.Class
+@namespace: metron.class
 @description: These methods are used for inheritance and for extending JavaScript class objects. All methods have corresponding global functions of the same name if those global functions do not already exist.
 */
 metron.class = {
@@ -62,11 +62,11 @@ metron.class = {
 /* Metron Web namespace and methods */
 
 metron.web = {
-	querystring: {
-		get: function (key) {
+	querystring: function(obj) {
+		if(typeof(obj) === 'string') {
 			var result = [];
 			var match;
-			var re = new RegExp('(?:\\?|&)' + key + '=(.*?)(?=&|$)', 'gi');
+			var re = new RegExp('(?:\\?|&)' + obj + '=(.*?)(?=&|$)', 'gi');
 			while ((match = re.exec(document.location.search)) != null) {
 				result.push(match[1]);
 			}
@@ -142,7 +142,7 @@ metron.guid = (function() {
 if(typeof($m) === 'undefined') {
 	$m = metron;
 	$m.querystring = function(key) {
-		return metron.web.querystring.get(key);
+		return metron.web.querystring(key);
 	}
 }
 
