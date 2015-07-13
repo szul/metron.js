@@ -75,6 +75,16 @@ metron.web = {
 	}
 };
 
+/* Metron elements namespace and methods */
+
+metron.elements = {
+	textarea: {
+		clean: function(elem) {
+			return elem.value.replace(/\r?\n/g, "\r\n");
+		}
+	}
+};
+
 /* Metron Observer namespace and methods */
 
 metron.observer = (function () {
@@ -281,6 +291,16 @@ String.prototype.escapeHtml = function() {
 	return content;
 };
 
+String.prototype.toBool = function () {
+	if (String.isNullOrEmpty(this)) {
+		return false;
+	}
+	else if (this.lower() === "true" || this.lower() === "1" || this.lower() === "y" || this.lower() === "t") {
+		return true;
+	}
+	return false;
+};
+
 //toPhoneNumber() needs to be a part of some validation mechanism
 String.prototype.toPhoneNumber = function() {
 	try {
@@ -296,6 +316,19 @@ String.isNullOrEmpty = function(val) {
 		return true;
 	}
 	return false;
+};
+
+/*
+ * Remember that Number extensions require the number to be in () or use the .. syntax:
+ * (1).toBool()
+ * 1..toBool()
+ */
+
+Number.prototype.toBool = function () {
+	if (this === 0) {
+		return false;
+	}
+	return true;
 };
 
 Array.prototype.empty = function() {
