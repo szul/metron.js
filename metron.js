@@ -72,6 +72,29 @@ metron.web = {
 			}
 			return result;
 		}
+	},
+	cookie: {
+		get: function(name) {
+	     var cookieParts = document.cookie.split(';');
+	     for(var i = 0; i < cookieParts.length; i++) {
+				 var cookieName = cookieParts[i].substr(0, cookieParts[i].indexOf("="));
+				 var cookieValue = cookieParts[i].substr(cookieParts[i].indexOf("=") + 1);
+				 if (cookieName.trim() == name) {
+					 return cookieValue;
+				 }
+	     }
+	     return null;
+		},
+		set: function(name, val, date) {
+			var cookie = name + '=' + val + ';path="/"';
+			if(typeof(date) !== 'undefined') {
+				cookie += ';expires=' + date.toUTCString();
+			}
+			document.cookie = cookie;
+		},
+		delete: function(name) {
+			document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+		}
 	}
 };
 
@@ -331,6 +354,13 @@ Number.prototype.toBool = function () {
 	return true;
 };
 
+Number.prototype.random = function(min, max) {
+	if(isNaN(min) || isNaN(max)) {
+		throw 'Error: Only numbers are accepted as arguments.';
+	}
+	return Math.floor(Math.random() * ( parseInt(max, 10) - parseInt(min, 10) + 1) + parseInt(min, 10);
+};
+
 Array.prototype.empty = function() {
 	return this.splice(0, this.length);
 };
@@ -364,7 +394,7 @@ Array.prototype.remove = function(item) {
  */
 Array.prototype.toObjectArray = function(objName) {
 	if (objName == null) {
-		throw 'Property name must be provided for conversion.';
+		throw 'Error: Property name must be provided for conversion.';
 	}
 	var items = this;
 	if(typeof(items[0]) == 'string' || typeof(items[0]) == 'number' || typeof(items[0]) == 'boolean') {

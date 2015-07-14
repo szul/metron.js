@@ -8,7 +8,7 @@
     <link type="text/css" href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.5/paper/bootstrap.min.css" rel="stylesheet" />
     <script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="//google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-    <script type="text/javascript" src="/js/metron.js"></script>
+    <script type="text/javascript" src="/js/metron.min.js"></script>
     <script type="text/javascript">
     </script>
   </head>
@@ -33,7 +33,8 @@
         <p class="lead"></p>
       </div>
       <h2>String Extensions</h2>
-      <p><code>String.lower()</code></p>
+      <div>
+        <code>String.lower()</code>
         <pre>
           <code class="language-prettyprint lang-javascript">
           var name = "JOHN";
@@ -41,7 +42,27 @@
           console.log(name);
           </code>
         </pre>
-
+      </div>
+      <div>
+        <code>String.upper()</code>
+        <pre>
+          <code class="language-prettyprint lang-javascript">
+          var name = "john";
+          name.upper();
+          console.log(name);
+          </code>
+        </pre>
+      </div>
+      <div>
+        <code>String.trim()</code>
+        <pre>
+          <code class="language-prettyprint lang-javascript">
+          var name = "   John   ";
+          name.trim();
+          console.log(name);
+          </code>
+        </pre>
+      </div>
     </div>
   </body>
 </html>
