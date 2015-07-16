@@ -348,11 +348,11 @@ String.prototype.normalize = function() {
 };
 
 String.prototype.startsWith = function (part) {
-    return this.slice(0, part.length) == part;
+    return (this.slice(0, part.length) == part);
 };
 
 String.prototype.endsWith = function (part) {
-    return this.slice(-part.length) == part;
+    return (this.slice(-part.length) == part);
 };
 
 String.prototype.capFirst = function() {
