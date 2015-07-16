@@ -59,22 +59,96 @@ metron.class = {
 	}
 };
 
+/* Metron Hashtable namespace and methods */
+
+metron.dictionary = function (obj) {
+	this.length = 0;
+	this.items = {};
+	if(obj != null) {
+		for (var prop in obj) {
+			if (obj.hasOwnProperty(prop)) {
+				this.items[prop] = obj[prop];
+				this.length++;
+			}
+		}
+	}
+	return {
+		setItem: function (key, value) {
+			if (!this.hasItem(key)) {
+				this.length++;
+			}
+			this.items[key] = value;
+		},
+		getItem: function (key) {
+			return this.hasItem(key) ? this.items[key] : null;
+		},
+		hasItem: function (key) {
+			return this.items.hasOwnProperty(key);
+		},
+		removeItem: function (key) {
+			if (this.hasItem(key)) {
+				this.length--;
+				delete this.items[key];
+				return 1;
+			}
+			else {
+				return 0;
+			}
+		},
+		keys: function () {
+			var keys = [];
+			for (var k in this.items) {
+				if (this.hasItem(k)) {
+					keys.push(k);
+				}
+			}
+			return keys;
+		},
+		values: function () {
+			var values = [];
+			for (var k in this.items) {
+				if (this.hasItem(k)) {
+					values.push(this.items[k]);
+				}
+			}
+			return values;
+		},
+		each: function (f) {
+			var i = 0;
+			for (var key in this.items) {
+				f(key, this.items[key], i);
+				i++;
+			}
+		},
+		clear: function () {
+			this.items = {}
+			this.length = 0;
+		}
+	}
+};
+
 /* Metron Web namespace and methods */
 
 metron.web = {
 	querystring: function(obj) {
-		if(typeof(obj) === 'string') {
-			var result = [];
-			var match;
-			var re = new RegExp('(?:\\?|&)' + obj + '=(.*?)(?=&|$)', 'gi');
-			while ((match = re.exec(document.location.search)) != null) {
-				result.push(match[1]);
+		if(typeof(document) !== 'undefined') {
+			if(typeof(obj) === 'string') {
+				var result = [];
+				var match;
+				var re = new RegExp('(?:\\?|&)' + obj + '=(.*?)(?=&|$)', 'gi');
+				while ((match = re.exec(document.location.search)) != null) {
+					result.push(match[1]);
+				}
+				return result;
 			}
-			return result;
+		}
+		else {
+			throw 'Error: No document object found. Environment may not contain a DOM.';
 		}
 	},
 	cookie: {
 		get: function(name) {
+			if(typeof(document) !== 'undefined') {
 	     var cookieParts = document.cookie.split(';');
 	     for(var i = 0; i < cookieParts.length; i++) {
 				 var cookieName = cookieParts[i].substr(0, cookieParts[i].indexOf("="));
@@ -84,16 +158,52 @@ metron.web = {
 				 }
 	     }
 	     return null;
+		 }
+		 else {
+			 throw 'Error: No document object found. Environment may not contain a DOM.';
+		 }
 		},
 		set: function(name, val, date) {
-			var cookie = name + '=' + val + ';path="/"';
-			if(typeof(date) !== 'undefined') {
-				cookie += ';expires=' + date.toUTCString();
+			if(typeof(document) !== 'undefined') {
+				var cookie = name + '=' + val + ';path="/"';
+				if(typeof(date) !== 'undefined') {
+					cookie += ';expires=' + date.toUTCString();
+				}
+				document.cookie = cookie;
 			}
-			document.cookie = cookie;
+			else {
+ 			 throw 'Error: No document object found. Environment may not contain a DOM.';
+ 		 }
 		},
 		delete: function(name) {
-			document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+			if(typeof(document) !== 'undefined') {
+				document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+			}
+			else {
+ 			 throw 'Error: No document object found. Environment may not contain a DOM.';
+ 		 }
+		}
+	},
+	headers: {
+		get: function(name) {
+			if(typeof(document) !== 'undefined') {
+				if(name != null) {
+					//Will this work in all browsers?
+					var request = new XMLHttpRequest();
+					request.open("HEAD", document.location, false);
+					request.send(null);
+					return request.getResponseHeader(name);
+				}
+				else {
+					var request = new XMLHttpRequest();
+					request.open("HEAD", document.location, false);
+					request.send(null);
+					return request.getAllResponseHeaders();
+				}
+			}
+			else {
+				throw 'Error: No document object found. Environment may not contain a DOM.';
+			}
 		}
 	}
 };
@@ -174,9 +284,6 @@ metron.guid = (function() {
 //Create a [$m] shortcut if one does not exist.
 if(typeof($m) === 'undefined') {
 	$m = metron;
-	$m.querystring = function(key) {
-		return metron.web.querystring(key);
-	}
 }
 
 /* If global functions for extends(), clone() and mixin() do not already exist, then it's OK to make the Metron ones global */
@@ -195,6 +302,23 @@ if(typeof(mixin) === 'undefined') {
 /* If a global object for Guid does not already exist, create one */
 if(typeof(Guid) === 'undefined') {
 	Guid = metron.guid;
+}
+
+/* If a global object for Guid does not already exist, create one */
+
+if(typeof(Dictionary) === 'undefined') {
+	Dictionary = metron.dictionary;
+}
+
+/* If an object for querystring and/or headers does not already exist on document.location, create one */
+
+if(typeof(document) !== 'undefined' && typeof(document.location) !== 'undefined') {
+	if(typeof(document.location.querystring) === 'undefined') {
+		document.location.querystring = metron.web.querystring;
+	}
+	if(typeof(document.location.headers) === 'undefined') {
+		document.location.headers = metron.web.headers;
+	}
 }
 
 /* String object extensions */
@@ -324,6 +448,17 @@ String.prototype.toBool = function () {
 	return false;
 };
 
+String.prototype.contains = function(val) {
+	if(this.indexOf(val) !== -1) {
+		return true;
+	}
+	return false;
+};
+
+String.prototype.slugify = function() {
+	return this.lower().normalize().replace(/[^a-z0-9]/gi,'-');
+};
+
 //toPhoneNumber() needs to be a part of some validation mechanism
 String.prototype.toPhoneNumber = function() {
 	try {
@@ -397,7 +532,7 @@ Array.prototype.toObjectArray = function(objName) {
 		throw 'Error: Property name must be provided for conversion.';
 	}
 	var items = this;
-	if(typeof(items[0]) == 'string' || typeof(items[0]) == 'number' || typeof(items[0]) == 'boolean') {
+	if(typeof(items[0]) === 'string' || typeof(items[0]) === 'number' || typeof(items[0]) === 'boolean') {
 	    for(var i = 0; i < items.length; i++) {
 		    var val = items[i];
 			items[i] = { };
