@@ -59,7 +59,7 @@ metron.class = {
 	}
 };
 
-/* Metron Hashtable namespace and methods */
+/* Metron Dictionary namespace and methods */
 
 metron.dictionary = function (obj) {
 	this.length = 0;
@@ -516,7 +516,7 @@ Array.prototype.each = function(callback) {
 Array.prototype.remove = function(item) {
 	var index = this.indexOf(item);
 	if(index != -1) {
-		this.splice(index, 1);
+		return this.splice(index, 1);
 	}
 };
 
