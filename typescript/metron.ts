@@ -275,27 +275,27 @@ if(typeof(document) !== 'undefined' && typeof(document.location) !== 'undefined'
 }
 */
 
-/*
+
 interface String {
-	lower: () => string;
-	upper: () => string;
-	trim: () => string;
-	ltrim: () => string;
-	rtrim: () => string;
-	normalize: () => string;
-	startsWith: () => string;
-	endsWith: () => string;
-	capFirst: () => string;
-	capWords: () => string;
-	truncateWords: () => string;
-	truncateWordsWithHtml: () => string;
-	stripHtml: () => string;
-	escapeHtml: () => string;
-	toBool: () => string;
-	contains: () => string;
-	slugify: () => string;
-	toPhoneNumber: () => string;
-	isNullOrEmpty: () => string;
+    lower: () => string;
+    upper: () => string;
+    //trim: () => string;
+    ltrim: () => string;
+    rtrim: () => string;
+    normalize: () => string;
+    startsWith: (part: string) => boolean;
+    endsWith: (part: string) => boolean;
+    capFirst: () => string;
+    capWords: () => string;
+    truncateWords: (number: number) => string;
+    truncateWordsWithHtml: (number: number) => string;
+    stripHtml: () => string;
+    escapeHtml: () => string;
+    toBool: () => boolean;
+    contains: (val: string) => boolean;
+    slugify: () => string;
+    toPhoneNumber: () => string;
+    isNullOrEmpty: (val: string) => boolean;
 }
 
 String.prototype.lower = function (): string {
@@ -450,7 +450,7 @@ String.isNullOrEmpty = function (val: string): boolean {
     }
     return false;
 };
-
+/*
 Number.prototype.toBool = function (): boolean {
     if (this === 0) {
         return false;
