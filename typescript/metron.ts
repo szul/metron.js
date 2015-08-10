@@ -19,7 +19,7 @@ module metron {
             placeholder.prototype = obj;
             return placeholder;
         }
-        static mixin(receivingObject: any, mixinObject: any) {
+        static mixin(receivingObject: any, mixinObject: any): void {
             for (var method in mixinObject.prototype) {
                 if (mixinObject.prototype[method] !== null && typeof (receivingObject.prototype[method]) === 'undefined') {
                     receivingObject.prototype[method] = mixinObject.prototype[method];
