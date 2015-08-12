@@ -95,21 +95,45 @@ module metron {
     }
 
     export class web {
-        static querystring(obj: string): Array<string> {
-            if (typeof (document) !== 'undefined') {
-                var result: Array<string> = [];
-                var match: any;
-                var re: RegExp = new RegExp('(?:\\?|&)' + obj + '=(.*?)(?=&|$)', 'gi');
-                while ((match = re.exec(document.location.search)) != null) {
-                    result.push(match[1]);
-                }
-                return result;
-            }
-            else {
-                throw 'Error: No document object found. Environment may not contain a DOM.';
-            }
+        private static parseUrl(url: string, obj: any): string {
+          var paramPairs: Array<string> = [];
+          if (url.contains('?')) {
+              var parts: Array<string> = url.split('?');
+              url = parts[0];
+              paramPairs = paramPairs.concat(parts[1].split('&'));
+          }
+          for (var prop in obj) {
+              if (obj.hasOwnProperty(prop) && paramPairs.indexOf(prop + '=' + obj[prop]) == -1) {
+                  paramPairs.push(prop + '=' + obj[prop]);
+              }
+          }
+          return url + '?' + paramPairs.join('&');
         }
-
+        static querystring(obj: string): Array<string> {
+          if (typeof (document) !== 'undefined') {
+              var result: Array<string> = [];
+              var match: any;
+              var re: RegExp = new RegExp('(?:\\?|&)' + obj + '=(.*?)(?=&|$)', 'gi');
+              while ((match = re.exec(document.location.search)) != null) {
+                  result.push(match[1]);
+              }
+              return result;
+          }
+          else {
+              throw 'Error: No document object found. Environment may not contain a DOM.';
+          }
+        }
+        static querystring(obj: Object): Array<string> {
+          if (typeof (document) !== 'undefined') {
+            return [this.parseUrl(document.location.href, obj)];
+          }
+          else {
+            throw 'Error: No document object found. Environment may not contain a DOM.';
+          }
+        }
+        static querystring(url: string, obj: any): Array<string> {
+          return [this.parseUrl(url, obj)];
+        }
     }
 
 }
@@ -380,7 +404,7 @@ String.prototype.truncateWordsWithHtml = function (number: number): string {
     for (var i = 0; i < matches.length; i++) {
         var opening: string = matches[i].replace('/', '');
         if (matches[i].indexOf('/') != -1 && tags.indexOf(opening) != -1) {
-            tags.remove(opening);
+            //tags.remove(opening);
         }
         else if (matches[i].indexOf('/') != -1) {
             continue;
@@ -414,12 +438,14 @@ String.prototype.escapeHtml = function (): string {
 };
 
 String.prototype.toBool = function (): boolean {
+  /*
     if (String.isNullOrEmpty(this)) {
         return false;
     }
     else if (this.lower() === "true" || this.lower() === "1" || this.lower() === "y" || this.lower() === "t") {
         return true;
     }
+    */
     return false;
 };
 
@@ -443,13 +469,14 @@ String.prototype.toPhoneNumber = function (): string {
         return this;
     }
 };
-
+/*
 String.isNullOrEmpty = function (val: string): boolean {
     if (val == null || val.trim() === '') {
         return true;
     }
     return false;
 };
+*/
 /*
 Number.prototype.toBool = function (): boolean {
     if (this === 0) {
