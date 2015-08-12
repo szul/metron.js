@@ -129,84 +129,106 @@ metron.dictionary = function (obj) {
 
 /* Metron Web namespace and methods */
 
-metron.web = {
-	querystring: function(obj) {
-		if(typeof(document) !== 'undefined') {
-			if(typeof(obj) === 'string') {
-				var result = [];
-				var match;
-				var re = new RegExp('(?:\\?|&)' + obj + '=(.*?)(?=&|$)', 'gi');
-				while ((match = re.exec(document.location.search)) != null) {
-					result.push(match[1]);
-				}
-				return result;
-			}
-		}
-		else {
-			throw 'Error: No document object found. Environment may not contain a DOM.';
-		}
-	},
-	cookie: {
-		get: function(name) {
-			if(typeof(document) !== 'undefined') {
-	     var cookieParts = document.cookie.split(';');
-	     for(var i = 0; i < cookieParts.length; i++) {
-				 var cookieName = cookieParts[i].substr(0, cookieParts[i].indexOf("="));
-				 var cookieValue = cookieParts[i].substr(cookieParts[i].indexOf("=") + 1);
-				 if (cookieName.trim() == name) {
-					 return cookieValue;
-				 }
-	     }
-	     return null;
-		 }
-		 else {
-			 throw 'Error: No document object found. Environment may not contain a DOM.';
-		 }
-		},
-		set: function(name, val, date) {
-			if(typeof(document) !== 'undefined') {
-				var cookie = name + '=' + val + ';path="/"';
-				if(typeof(date) !== 'undefined') {
-					cookie += ';expires=' + date.toUTCString();
-				}
-				document.cookie = cookie;
-			}
-			else {
- 			 throw 'Error: No document object found. Environment may not contain a DOM.';
- 		 }
-		},
-		delete: function(name) {
-			if(typeof(document) !== 'undefined') {
-				document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-			}
-			else {
- 			 throw 'Error: No document object found. Environment may not contain a DOM.';
- 		 }
-		}
-	},
-	headers: {
-		get: function(name) {
-			if(typeof(document) !== 'undefined') {
-				if(name != null) {
-					//Will this work in all browsers?
-					var request = new XMLHttpRequest();
-					request.open("HEAD", document.location, false);
-					request.send(null);
-					return request.getResponseHeader(name);
-				}
-				else {
-					var request = new XMLHttpRequest();
-					request.open("HEAD", document.location, false);
-					request.send(null);
-					return request.getAllResponseHeaders();
-				}
-			}
-			else {
-				throw 'Error: No document object found. Environment may not contain a DOM.';
-			}
-		}
-	}
-};
+metron.web = (function() {
+    function parseUrl(url, obj) {
+        var paramPairs = [];
+        if (url.contains('?')) {
+            var parts = url.split('?');
+            url = parts[0];
+            paramPairs = paramPairs.concat(parts[1].split('&'));
+        }
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop) && paramPairs.indexOf(prop + '=' + obj[prop]) == -1) {
+                paramPairs.push(prop + '=' + obj[prop]);
+            }
+        }
+        return url + '?' + paramPairs.join('&');
+    }
+    return {
+        querystring: function (obj) {
+            if (typeof (document) !== 'undefined') {
+                if (typeof (obj) === 'string' && arguments.length === 1) {
+                    var result = [];
+                    var match;
+                    var re = new RegExp('(?:\\?|&)' + obj + '=(.*?)(?=&|$)', 'gi');
+                    while ((match = re.exec(document.location.search)) != null) {
+                        result.push(match[1]);
+                    }
+                    return result;
+                }
+                else if (typeof (obj) === 'string' && arguments.length > 1) {
+                    return [parseUrl(obj, arguments[1])];
+                }
+                else {
+                    return[parseUrl(document.location.href, obj)];
+                }
+            }
+            else {
+                throw 'Error: No document object found. Environment may not contain a DOM.';
+            }
+        },
+        cookie: {
+            get: function (name) {
+                if (typeof (document) !== 'undefined') {
+                    var cookieParts = document.cookie.split(';');
+                    for (var i = 0; i < cookieParts.length; i++) {
+                        var cookieName = cookieParts[i].substr(0, cookieParts[i].indexOf("="));
+                        var cookieValue = cookieParts[i].substr(cookieParts[i].indexOf("=") + 1);
+                        if (cookieName.trim() == name) {
+                            return cookieValue;
+                        }
+                    }
+                    return null;
+                }
+                else {
+                    throw 'Error: No document object found. Environment may not contain a DOM.';
+                }
+            },
+            set: function (name, val, date) {
+                if (typeof (document) !== 'undefined') {
+                    var cookie = name + '=' + val + ';path="/"';
+                    if (typeof (date) !== 'undefined') {
+                        cookie += ';expires=' + date.toUTCString();
+                    }
+                    document.cookie = cookie;
+                }
+                else {
+                    throw 'Error: No document object found. Environment may not contain a DOM.';
+                }
+            },
+            delete: function (name) {
+                if (typeof (document) !== 'undefined') {
+                    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+                }
+                else {
+                    throw 'Error: No document object found. Environment may not contain a DOM.';
+                }
+            }
+        },
+        headers: {
+            get: function (name) {
+                if (typeof (document) !== 'undefined') {
+                    if (name != null) {
+                        //Will this work in all browsers?
+                        var request = new XMLHttpRequest();
+                        request.open("HEAD", document.location, false);
+                        request.send(null);
+                        return request.getResponseHeader(name);
+                    }
+                    else {
+                        var request = new XMLHttpRequest();
+                        request.open("HEAD", document.location, false);
+                        request.send(null);
+                        return request.getAllResponseHeaders();
+                    }
+                }
+                else {
+                    throw 'Error: No document object found. Environment may not contain a DOM.';
+                }
+            }
+        }
+    }
+})();
 
 /* Metron elements namespace and methods */
 
@@ -348,11 +370,11 @@ String.prototype.normalize = function() {
 };
 
 String.prototype.startsWith = function (part) {
-    return (this.slice(0, part.length) == part);
+    return this.slice(0, part.length) == part;
 };
 
 String.prototype.endsWith = function (part) {
-    return (this.slice(-part.length) == part);
+    return this.slice(-part.length) == part;
 };
 
 String.prototype.capFirst = function() {
@@ -516,7 +538,7 @@ Array.prototype.each = function(callback) {
 Array.prototype.remove = function(item) {
 	var index = this.indexOf(item);
 	if(index != -1) {
-		return this.splice(index, 1);
+		this.splice(index, 1);
 	}
 };
 
