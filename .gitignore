@@ -42,6 +42,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+.settings/
 .idea/
 node_modules/
 metron-0.1.x/

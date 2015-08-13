@@ -1,30 +1,10 @@
-/*
-@library: Metron
-@namespace: metron
-@description: A JavaScript library designed to be lightweight that focuses on native type extensions and common view formatting.
-*/
-if(typeof(metron) === 'undefined') {
-	metron = { };
-}
-else {
-	throw 'Error: A library named [metron] already exists in the current namespace.';
-}
+var metron = { };
 
-/*
-@namespace: metron.class
-@description: These methods are used for inheritance and for extending JavaScript class objects. All methods have corresponding global functions of the same name if those global functions do not already exist.
-*/
 metron.class = {
-	/*
-	@method: extend(object subClass, object superClass)
-	@description: If the objects use classical inheritance, this will subclass one object with another.
-	@param: subClass = The object to inherit from the superclass.
-	@param: superClass = The object from which the subclass inherits.
-	*/
 	extend : function(subClass, superClass) {
-		var placeholder = function() { };
-		placeholder.prototype = superClass.prototype;
-		subClass.prototype = new placeholder();
+		var Placeholder = function() { };
+		Placeholder.prototype = superClass.prototype;
+		subClass.prototype = new Placeholder();
 		subClass.prototype.constructor = subClass;
 		subClass.superclass = superClass.prototype;
 		//Should this be === ?
@@ -32,23 +12,11 @@ metron.class = {
 			superClass.prototype.constructor = superClass;
 		}
 	},
-	/*
-	@method: clone(object superClass)
-	@description: If the objects use prototypal inheritance, this will return a cloned version of the superclass.
-	@param: superClass = The object to be cloned.
-	@return: object
-	*/
 	clone : function(obj) {
-		function placeholder() { }
-		placeholder.prototype = obj;
-		return new placeholder();
+		function Placeholder() { }
+		Placeholder.prototype = obj;
+		return new Placeholder();
 	},
-	/*
-	@method: mixin(object receivingObject, object mixinObject)
-	@description: Extends the receiving object with the methods and properties from the mixin object.
-	@param: receivingObject = The object to receive the methods and properties.
-	@param: mixinObject = The object containing the methods and properties to be mixed in.
-	*/
 	mixin : function(receivingObject, mixinObject) {
 		//Does this need hasOwnObject() ?
 		for(var method in mixinObject.prototype) {
@@ -58,8 +26,6 @@ metron.class = {
 		}
 	}
 };
-
-/* Metron Hashtable namespace and methods */
 
 metron.dictionary = function (obj) {
 	this.length = 0;
@@ -126,8 +92,6 @@ metron.dictionary = function (obj) {
 		}
 	}
 };
-
-/* Metron Web namespace and methods */
 
 metron.web = (function() {
     function parseUrl(url, obj) {
@@ -208,16 +172,17 @@ metron.web = (function() {
         headers: {
             get: function (name) {
                 if (typeof (document) !== 'undefined') {
+					var request;
                     if (name != null) {
                         //Will this work in all browsers?
-                        var request = new XMLHttpRequest();
-                        request.open("HEAD", document.location, false);
+                        request = new XMLHttpRequest();
+                        request.open("HEAD", document.location.href, false);
                         request.send(null);
                         return request.getResponseHeader(name);
                     }
                     else {
-                        var request = new XMLHttpRequest();
-                        request.open("HEAD", document.location, false);
+                        request = new XMLHttpRequest();
+                        request.open("HEAD", document.location.href, false);
                         request.send(null);
                         return request.getAllResponseHeaders();
                     }
@@ -230,8 +195,6 @@ metron.web = (function() {
     }
 })();
 
-/* Metron elements namespace and methods */
-
 metron.elements = {
 	textarea: {
 		clean: function(elem) {
@@ -239,8 +202,6 @@ metron.elements = {
 		}
 	}
 };
-
-/* Metron Observer namespace and methods */
 
 metron.observer = (function () {
 	var callback;
@@ -286,8 +247,6 @@ metron.observer = (function () {
     	};
 })();
 
-/* Metron GUID namespace and methods */
-
 metron.guid = (function() {
 	function generateGUIDPart() {
     	    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
@@ -303,36 +262,12 @@ metron.guid = (function() {
 	};
 })();
 
-//Create a [$m] shortcut if one does not exist.
-if(typeof($m) === 'undefined') {
-	$m = metron;
-}
-
-/* If global functions for extends(), clone() and mixin() do not already exist, then it's OK to make the Metron ones global */
-if(typeof(extend) === 'undefined') {
-	extend = metron.class.extend;
-}
-
-if(typeof(clone) === 'undefined') {
-	clone = metron.class.clone;
-}
-
-if(typeof(mixin) === 'undefined') {
-	mixin = metron.class.mixin;
-}
-
-/* If a global object for Guid does not already exist, create one */
-if(typeof(Guid) === 'undefined') {
-	Guid = metron.guid;
-}
-
-/* If a global object for Guid does not already exist, create one */
-
-if(typeof(Dictionary) === 'undefined') {
-	Dictionary = metron.dictionary;
-}
-
-/* If an object for querystring and/or headers does not already exist on document.location, create one */
+var $m = (typeof($m) === 'undefined') ? metron : $m;
+var extend = (typeof(extend) === 'undefined') ? metron.class.extend : extend;
+var clone = (typeof(clone) === 'undefined') ? metron.class.clone : clone;
+var mixin = (typeof(mixin) === 'undefined') ? metron.class.mixin : mixin;
+var Guid = (typeof(Guid) === 'undefined') ? metron.guid : Guid;
+var Dictionary = (typeof(Dictionary) === 'undefined') ? metron.dictionary : Dictionary;
 
 if(typeof(document) !== 'undefined' && typeof(document.location) !== 'undefined') {
 	if(typeof(document.location.querystring) === 'undefined') {
@@ -342,8 +277,6 @@ if(typeof(document) !== 'undefined' && typeof(document.location) !== 'undefined'
 		document.location.headers = metron.web.headers;
 	}
 }
-
-/* String object extensions */
 
 String.prototype.lower = function() {
 	return this.toLowerCase();
