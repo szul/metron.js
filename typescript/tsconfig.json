@@ -20,6 +20,7 @@
         "!./node_modules/**/*"
     ],
     "files": [
+        "./metron.d.ts",
         "./metron.ts"
     ]
 }

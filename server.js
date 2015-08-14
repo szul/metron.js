@@ -6,7 +6,7 @@ var app = express();
 /*
  * Serve static content.
  */
-app.use('/', express.static(__dirname + '/static'));
+app.use('/', express.static(__dirname + '/javascript'));
 
 /*
  *For Azure deployment
