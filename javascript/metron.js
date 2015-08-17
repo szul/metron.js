@@ -1,4 +1,4 @@
-var metron = { };
+var metron = {};
 
 metron.class = {
     extend: function (subClass, superClass) {
@@ -18,41 +18,41 @@ metron.class = {
     },
     mixin: function (receivingObject, mixinObject) {
         for (var method in mixinObject.prototype) {
-          if(mixin.prototype.hasOwnProperty(method)) {
-            if (mixinObject.prototype[method] !== null && typeof (receivingObject.prototype[method]) === 'undefined') {
-                receivingObject.prototype[method] = mixinObject.prototype[method];
+            if (mixin.prototype.hasOwnProperty(method)) {
+                if (mixinObject.prototype[method] !== null && typeof (receivingObject.prototype[method]) === 'undefined') {
+                    receivingObject.prototype[method] = mixinObject.prototype[method];
+                }
             }
-          }
         }
     }
 };
 
 metron.dictionary = (function () {
     function dictionary(obj) {
-      this.length = 0;
-      this.items = {};
-      if (obj !== null) {
-          for (var prop in obj) {
-              if (obj.hasOwnProperty(prop)) {
-                  this.items[prop] = obj[prop];
-                  this.length++;
-              }
-          }
-      }
+        this.length = 0;
+        this.items = {};
+        if (obj !== null) {
+            for (var prop in obj) {
+                if (obj.hasOwnProperty(prop)) {
+                    this.items[prop] = obj[prop];
+                    this.length++;
+                }
+            }
+        }
     }
-    this.dictionary.prototype.setItem = function (key, value) {
+    dictionary.prototype.setItem = function (key, value) {
         if (!this.hasItem(key)) {
             this.length++;
         }
         this.items[key] = value;
     };
-    this.dictionary.prototype.getItem = function (key) {
+    dictionary.prototype.getItem = function (key) {
         return this.hasItem(key) ? this.items[key] : null;
     };
-    this.dictionary.prototype.hasItem = function (key) {
+    dictionary.prototype.hasItem = function (key) {
         return this.items.hasOwnProperty(key);
     };
-    this.dictionary.prototype.removeItem = function (key) {
+    dictionary.prototype.removeItem = function (key) {
         if (this.hasItem(key)) {
             this.length--;
             delete this.items[key];
@@ -62,7 +62,7 @@ metron.dictionary = (function () {
             return 0;
         }
     };
-    this.dictionary.prototype.keys = function () {
+    dictionary.prototype.keys = function () {
         var keys = [];
         for (var k in this.items) {
             if (this.hasItem(k)) {
@@ -71,7 +71,7 @@ metron.dictionary = (function () {
         }
         return keys;
     };
-    this.dictionary.prototype.values = function () {
+    dictionary.prototype.values = function () {
         var values = [];
         for (var k in this.items) {
             if (this.hasItem(k)) {
@@ -80,14 +80,14 @@ metron.dictionary = (function () {
         }
         return values;
     };
-    this.dictionary.prototype.each = function (f) {
+    dictionary.prototype.each = function (f) {
         var i = 0;
         for (var key in this.items) {
             f(key, this.items[key], i);
             i++;
         }
     };
-    this.dictionary.prototype.clear = function () {
+    dictionary.prototype.clear = function () {
         this.items = {};
         this.length = 0;
     };
@@ -103,8 +103,11 @@ metron.web = (function () {
             paramPairs = paramPairs.concat(parts[1].split('&'));
         }
         for (var prop in obj) {
-            if (obj.hasOwnProperty(prop) && paramPairs.indexOf(prop + '=' + obj[prop]) == -1) {
+            if (obj.hasOwnProperty(prop) && !paramPairs.contains(prop)) {
                 paramPairs.push(prop + '=' + obj[prop]);
+            }
+            else if (obj.hasOwnProperty(prop) && paramPairs.contains(prop)) {
+                paramPairs[paramPairs.indexOfPartial(prop)] = prop + '=' + obj[prop];
             }
         }
         return url + '?' + paramPairs.join('&');
@@ -116,7 +119,7 @@ metron.web = (function () {
                     var result = [];
                     var match;
                     var re = new RegExp('(?:\\?|&)' + obj + '=(.*?)(?=&|$)', 'gi');
-                    while ((match = re.exec(document.location.search)) !== undefined) {
+                    while ((match = re.exec(document.location.search)) !== null) {
                         result.push(match[1]);
                     }
                     return result;
@@ -474,6 +477,24 @@ Array.prototype.remove = function (item) {
     if (index != -1) {
         this.splice(index, 1);
     }
+};
+
+Array.prototype.contains = function (partial) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i].contains(partial)) {
+            return true;
+        }
+    }
+    return false;
+};
+
+Array.prototype.indexOfPartial = function (partial) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i].contains(partial)) {
+            return i;
+        }
+    }
+    return -1;
 };
 
 /*

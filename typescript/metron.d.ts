@@ -22,6 +22,7 @@ declare module metron {
         static querystring(url: string, obj: any): Array<string>;
     }
 }
+
 interface String {
     lower: () => string;
     upper: () => string;
@@ -40,4 +41,14 @@ interface String {
     contains: (val: string) => boolean;
     slugify: () => string;
     toPhoneNumber: () => string;
+}
+
+interface Array<T> {
+    empty: () => any;
+    isEmpty: () => boolean;
+    each: (callback: Function) => void;
+    remove: (item: any) => any;
+    contain: (partial: string) => boolean;
+    indexOfPartial: (partial: string) => number;
+    toObjectArray: (objName: string) => Array<any>;
 }
