@@ -17,26 +17,37 @@ module.exports = function (grunt) {
                     }
                 ]
             }
-        }//,
-        /*
+        },
         less: {
             options: {
-                paths: ["css"],
+                paths: ["javascript/css"],
             },
             src: {
                 expand: true,
-                cwd: "css",
+                cwd: "javascript/css",
                 src: "*.less",
-                dest: "css",
+                dest: "javascript/css",
                 ext: ".css",
             }
+        },
+        typescript: {
+            base: {
+                src: ['typescript/**/*.ts'],
+                dest: 'typescript',
+                options: {
+                    module: 'commonjs', 
+                    target: 'es5',
+                    basePath: 'typescript',
+                    sourceMap: true,
+                    declaration: true
+                }
+            }
         }
-        */
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    //grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-typescript');
 
-    //grunt.registerTask('default', ['uglify', 'less']);
-    grunt.registerTask('default', ['uglify']);
+    grunt.registerTask('default', ['uglify', 'less', 'typescript']);
 }
