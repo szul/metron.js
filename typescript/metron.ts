@@ -123,6 +123,7 @@ module metron {
               throw 'Error: No document object found. Environment may not contain a DOM.';
           }
         }
+        /*
         static querystring(obj: Object): Array<string> {
           if (typeof (document) !== 'undefined') {
             return [this.parseUrl(document.location.href, obj)];
@@ -134,6 +135,7 @@ module metron {
         static querystring(url: string, obj: any): Array<string> {
           return [this.parseUrl(url, obj)];
         }
+        */
     }
 
 }

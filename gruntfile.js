@@ -32,12 +32,12 @@ module.exports = function (grunt) {
         },
         typescript: {
             base: {
-                src: ['typescript/**/*.ts'],
+                src: ['typescript/**/*.ts', "!**/*.d.ts"],
                 dest: 'typescript',
                 options: {
                     module: 'commonjs', 
                     target: 'es5',
-                    basePath: 'typescript',
+                    rootDir: 'typescript',
                     sourceMap: true,
                     declaration: true
                 }
