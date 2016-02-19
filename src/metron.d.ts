@@ -18,8 +18,9 @@ declare module metron {
         clear(): void;
     }
     class web {
-        private static parseUrl(url, obj);
-        static querystring(obj: string): Array<string>;
+        static querystring(obj: any): Array<string>;
+        static querystring(url: string, obj: any): Array<string>;
+        static querystringify(obj: any): string;
     }
 }
 interface String {
@@ -40,5 +41,5 @@ interface String {
     contains: (val: string) => boolean;
     slugify: () => string;
     toPhoneNumber: () => string;
-    isNullOrEmpty: (val: string) => boolean;
+    //isNullOrEmpty: (val: string) => boolean;
 }

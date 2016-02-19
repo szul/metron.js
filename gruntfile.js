@@ -10,34 +10,22 @@ module.exports = function (grunt) {
                 files: [
                     {
                         expand: true,
-                        cwd: "javascript",
+                        cwd: "src",
                         src: ["**/*.js", "!**/*.min.js"],
-                        dest: "javascript",
+                        dest: "src",
                         ext: ".min.js"
                     }
                 ]
             }
         },
-        less: {
-            options: {
-                paths: ["javascript/css"],
-            },
-            src: {
-                expand: true,
-                cwd: "javascript/css",
-                src: "*.less",
-                dest: "javascript/css",
-                ext: ".css",
-            }
-        },
         typescript: {
             base: {
-                src: ['typescript/**/*.ts', "!**/*.d.ts"],
-                dest: 'typescript',
+                src: ['src/**/*.ts', "!**/*.d.ts"],
+                dest: 'src',
                 options: {
                     module: 'commonjs', 
                     target: 'es5',
-                    rootDir: 'typescript',
+                    rootDir: 'src',
                     sourceMap: true,
                     declaration: true
                 }
@@ -46,8 +34,8 @@ module.exports = function (grunt) {
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-typescript');
 
-    grunt.registerTask('default', ['uglify', 'less', 'typescript']);
-}
+    grunt.registerTask('default', ['uglify', 'typescript']);
+};
+
