@@ -5,24 +5,26 @@ declare module metron {
         static mixin(receivingObject: any, mixinObject: any): void;
     }
     class dictionary {
-        length: number;
-        items: any;
+        public length: number;
+        public items: any;
         constructor(obj?: any);
-        setItem(key: string, value: any): void;
-        getItem(key: string): any;
-        hasItem(key: string): boolean;
-        removeItem(key: string): number;
-        keys(): Array<string>;
-        values(): Array<any>;
-        each(f: Function): void;
-        clear(): void;
+        public setItem(key: string, value: any): void;
+        public getItem(key: string): any;
+        public hasItem(key: string): boolean;
+        public removeItem(key: string): number;
+        public keys(): string[];
+        public values(): any[];
+        public each(f: Function): void;
+        public clear(): void;
     }
     class web {
         static querystring(obj: any): Array<string>;
         static querystring(url: string, obj: any): Array<string>;
         static querystringify(obj: any): string;
     }
+    function guid(): string;
 }
+
 interface String {
     lower: () => string;
     upper: () => string;
@@ -41,5 +43,16 @@ interface String {
     contains: (val: string) => boolean;
     slugify: () => string;
     toPhoneNumber: () => string;
-    //isNullOrEmpty: (val: string) => boolean;
 }
+
+interface Array<T> {
+    empty: () => any;
+    isEmpty: () => boolean;
+    each: (callback: Function) => void;
+    remove: (item: any) => any;
+    contain: (partial: string) => boolean;
+    indexOfPartial: (partial: string) => number;
+    toObjectArray: (objName: string) => Array<any>;
+}
+
+declare function Guid(): string;
