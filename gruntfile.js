@@ -1,6 +1,6 @@
 module.exports = function (grunt) {
     grunt.initConfig({
-        pkg: grunt.file.readJSON('package.json'),
+        pkg: grunt.file.readJSON("package.json"),
         uglify: {
             options: {
                 mangle: false,
@@ -17,25 +17,10 @@ module.exports = function (grunt) {
                     }
                 ]
             }
-        },
-        typescript: {
-            base: {
-                src: ['src/**/*.ts', "!**/*.d.ts"],
-                dest: 'src',
-                options: {
-                    module: 'commonjs', 
-                    target: 'es5',
-                    rootDir: 'src',
-                    sourceMap: true,
-                    declaration: true
-                }
-            }
         }
     });
 
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-typescript');
-
-    grunt.registerTask('default', ['uglify', 'typescript']);
+    grunt.loadNpmTasks("grunt-contrib-uglify");
+    grunt.registerTask("default", ["uglify"]);
 };
 

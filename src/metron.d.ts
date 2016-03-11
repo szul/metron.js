@@ -55,4 +55,8 @@ interface Array<T> {
     toObjectArray: (objName: string) => Array<any>;
 }
 
+interface Object {
+    getName: () => string;
+}
+
 declare function Guid(): string;

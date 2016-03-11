@@ -135,7 +135,7 @@ metron.web = (function () {
                 throw 'Error: No document object found. Environment may not contain a DOM.';
             }
         },
-        querystringify: function(obj) {
+        querystringify: function (obj) {
             return parseUrl("", obj);
         },
         cookie: {
@@ -527,4 +527,10 @@ Array.prototype.toObjectArray = function (objName) {
 
 Object.isEmpty = function (obj) {
     return (Object.getOwnPropertyNames(obj).length === 0);
+};
+
+Object.getName = function() {
+    var regex = /function (.{1,})\(/;
+    var results = regex.exec((this).constructor.toString());
+    return (results && results.length > 1) ? results[1] : "";
 };
