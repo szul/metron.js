@@ -417,8 +417,11 @@ String.prototype.contains = function (val) {
     return false;
 };
 
-String.prototype.slugify = function () {
-    return this.lower().normalize().replace(/[^a-z0-9]/gi, '-');
+String.prototype.slugify = function (lower) {
+    if(lower) {
+        return this.lower().normalize().replace(/[^a-z0-9]/gi, '-');
+    }
+    return this.normalize().replace(/[^a-z0-9]/gi, '-');
 };
 
 //toPhoneNumber() needs to be a part of some validation mechanism
