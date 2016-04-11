@@ -41,7 +41,7 @@ interface String {
     escapeHtml: () => string;
     toBool: () => boolean;
     contains: (val: string) => boolean;
-    slugify: () => string;
+    slugify: (lower?: boolean) => string;
     toPhoneNumber: () => string;
 }
 
