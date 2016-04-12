@@ -103,10 +103,10 @@ metron.web = (function () {
             paramPairs = paramPairs.concat(parts[1].split('&'));
         }
         for (var prop in obj) {
-            if (obj.hasOwnProperty(prop) && !paramPairs.contains(prop)) {
+            if (obj.hasOwnProperty(prop) && !paramPairs.contains(prop, true)) {
                 paramPairs.push(prop + '=' + obj[prop]);
             }
-            else if (obj.hasOwnProperty(prop) && paramPairs.contains(prop)) {
+            else if (obj.hasOwnProperty(prop) && paramPairs.contains(prop, true)) {
                 paramPairs[paramPairs.indexOfPartial(prop)] = prop + '=' + obj[prop];
             }
         }
@@ -485,9 +485,12 @@ Array.prototype.remove = function (item) {
     }
 };
 
-Array.prototype.contains = function (partial) {
+Array.prototype.contains = function (partial, strict) {
     for (var i = 0; i < this.length; i++) {
-        if (this[i].contains(partial)) {
+        if (!strict && this[i].contains(partial)) {
+            return true;
+        }
+        if (strict && this[i] === partial) {
             return true;
         }
     }
