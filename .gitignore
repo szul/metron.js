@@ -45,6 +45,7 @@ Temporary Items
 .settings/
 .idea/
 node_modules/
+.vscode/
 metron-0.1.x/
 metron-0.2.x/
 metron-0.3.x/

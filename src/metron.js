@@ -1,32 +1,5 @@
 var metron = {};
 
-metron.class = {
-    extend: function (subClass, superClass) {
-        var Placeholder = function () { };
-        Placeholder.prototype = superClass.prototype;
-        subClass.prototype = new Placeholder();
-        subClass.prototype.constructor = subClass;
-        subClass.superclass = superClass.prototype;
-        if (superClass.prototype.constructor == Object.prototype.constructor) {
-            superClass.prototype.constructor = superClass;
-        }
-    },
-    clone: function (obj) {
-        function Placeholder() { }
-        Placeholder.prototype = obj;
-        return new Placeholder();
-    },
-    mixin: function (receivingObject, mixinObject) {
-        for (var method in mixinObject.prototype) {
-            if (mixin.prototype.hasOwnProperty(method)) {
-                if (mixinObject.prototype[method] !== null && typeof (receivingObject.prototype[method]) === 'undefined') {
-                    receivingObject.prototype[method] = mixinObject.prototype[method];
-                }
-            }
-        }
-    }
-};
-
 metron.dictionary = (function () {
     function dictionary(obj) {
         this.length = 0;
@@ -270,9 +243,6 @@ metron.guid = (function () {
 })();
 
 var $m = (typeof ($m) === 'undefined') ? metron : $m;
-var extend = (typeof (extend) === 'undefined') ? metron.class.extend : extend;
-var clone = (typeof (clone) === 'undefined') ? metron.class.clone : clone;
-var mixin = (typeof (mixin) === 'undefined') ? metron.class.mixin : mixin;
 var Guid = (typeof (Guid) === 'undefined') ? metron.guid : Guid;
 var Dictionary = (typeof (Dictionary) === 'undefined') ? metron.dictionary : Dictionary;
 

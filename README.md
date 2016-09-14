@@ -7,5 +7,8 @@ It was originally used in Windows XP and Windows 7 gadgets, and was later used i
 
 This repo contains the development branch. For the stable files, use the CDN:
 
-    http://cdn.overmortal.com/metron/metron-0.6.js
-    http://cdn.overmortal.com/metron/metron-0.6.min.js
+    http://cdn.october.codes/metron/metron-0.7.js
+    http://cdn.october.codes/metron/metron-0.7.min.js
+
+## Maintenance notes
+This library is deprecated. It will be updated with bug fixes, but no further development will occur. Instead, `metron` is being rebuilt from the ground up in TypeScript.

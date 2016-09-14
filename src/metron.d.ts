@@ -1,9 +1,4 @@
 declare module metron {
-    class tools {
-        static extend(subClass: any, superClass: any): void;
-        static clone(obj: any): any;
-        static mixin(receivingObject: any, mixinObject: any): void;
-    }
     class dictionary {
         public length: number;
         public items: any;
@@ -60,3 +55,4 @@ interface Object {
 }
 
 declare function Guid(): string;
+declare function Dictionary(): any;
