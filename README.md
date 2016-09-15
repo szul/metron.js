@@ -11,4 +11,4 @@ This repo contains the development branch. For the stable files, use the CDN:
     http://cdn.october.codes/metron/metron-0.7.min.js
 
 ## Maintenance notes
-This library is deprecated. It will be updated with bug fixes, but no further development will occur. Instead, `metron` is being rebuilt from the ground up in TypeScript.
+This library is deprecated. It will be updated with bug fixes, but no further development will occur. Instead, [`metron` is being rebuilt from the ground up in TypeScript](https://github.com/szul/metron.v2).
